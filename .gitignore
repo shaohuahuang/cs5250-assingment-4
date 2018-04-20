@@ -4,3 +4,5 @@ SJF.txt
 SRTF.txt
 .idea
 node_modules
+src
+tests
