@@ -1,6 +1,6 @@
 // import sinon from "sinon"
 import assert from "assert"
-import {isEmpty, initProcessTasksMap, getAverageWaitingTime, RR_scheduling} from "../src/RR_scheduling"
+import { initProcessTasksMap, RR_scheduling} from "../src/RR_scheduling"
 import Process from "../src/Process"
 
 describe("test RR_scheduling", () => {
@@ -23,16 +23,6 @@ describe("test RR_scheduling", () => {
                 '3': [ ] }
 
             , initProcessTasksMap(process_list))
-    })
-
-    it("test getAverageWaitingTime", () => {
-        let processedList = [
-            { id: 0, arrive_time: 0, burst_time: 9, completion_time: 19 },
-            { id: 0, arrive_time: 0, burst_time: 10, completion_time: 20 },
-            { id: 0, arrive_time: 0, burst_time: 11, completion_time: 21 },
-            { id: 0, arrive_time: 0, burst_time: 12, completion_time: 22 },
-        ]
-        assert.equal(10.00, getAverageWaitingTime(processedList))
     })
 
     describe("test RR_scheduling", () => {

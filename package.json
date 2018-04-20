@@ -26,5 +26,8 @@
   "bugs": {
     "url": "https://github.com/shaohuahuang/cs5250-assingment-4/issues"
   },
-  "homepage": "https://github.com/shaohuahuang/cs5250-assingment-4#readme"
+  "homepage": "https://github.com/shaohuahuang/cs5250-assingment-4#readme",
+  "dependencies": {
+    "heap": "^0.2.6"
+  }
 }

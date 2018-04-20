@@ -1,4 +1,5 @@
 import fs from "fs"
+import Heap from "heap"
 
 function Process(id, arrive_time, burst_time){
     this.id = id
@@ -104,10 +105,68 @@ function getAverageWaitingTime(processedList) {
     return (total / processedList.length).toFixed(2)
 }
 
-//------------------------------------------------------------------------
+//--------------------------------SRTF_scheduling----------------------------------------
+function SRTF_scheduling(process_list){
+    let schedule = []
+    let current_time = 0
+    let heap = new Heap((a, b) => a.remaining_burst_time - b.remaining_burst_time)
+    let process_list_copy = process_list.map(process => Object.assign({}, process))
+    let processedList = []
+    let prevTurn = -1
 
+    while (heap.size() > 0 || process_list_copy.length > 0){
+        if(heap.size() === 0){
+            //advance the time to the arrive_time of the first task if heap is empty
+            current_time += process_list_copy[0].arrive_time
+        }
 
+        while (process_list_copy.length > 0){
+            if(process_list_copy[0].arrive_time <= current_time){
+                // add the task into min heap if its arrive_time smaller than current_time
+                heap.push(process_list_copy.shift())
+            }
+            else
+                break
+        }
 
+        //execute task
+        let task = heap.pop();
+        if(task.id !== prevTurn){
+            schedule.push([current_time, task.id])
+            prevTurn = task.id
+        }
+        if(process_list_copy.length > 0){
+            let firstTask = process_list_copy[0]
+            if(task.remaining_burst_time + current_time <= firstTask.arrive_time){
+                // peacefully execute this task
+                current_time += task.remaining_burst_time // advance current_time
+                task.completion_time = current_time //set completion_time
+                task.remaining_burst_time = 0 // set remaining_burst_time to 0
+                processedList.push(task) // add the completed task into processed list
+            }else{
+                let execution_time = firstTask.arrive_time - current_time
+                task.remaining_burst_time -= execution_time
+                current_time = firstTask.arrive_time //set current_time to the arrive_time of first task
+                heap.push(task)
+                heap.push(process_list_copy.shift())
+            }
+        }else{
+            // no task in process_list
+            current_time += task.remaining_burst_time // advance current_time
+            task.completion_time = current_time //set completion_time
+            task.remaining_burst_time = 0 // set remaining_burst_time to 0
+            processedList.push(task) // add the completed task into processed list
+        }
+    }
+
+    console.log(processedList)
+    return {SRTF_schedule: schedule, SRTF_avg_waiting_time: getAverageWaitingTime(processedList)}
+}
+
+//--------------------------------SJF
+function SJF_scheduling(process_list, alpha) {
+
+}
 
 function read_input() {
     let lines = fs.readFileSync("input.txt").toString().split("\n")
@@ -144,6 +203,15 @@ function main(argv) {
     let time_quantum = 2
     let {RR_schedule, RR_avg_waiting_time} = RR_scheduling(process_list, time_quantum)
     write_output("RR.txt", RR_schedule, RR_avg_waiting_time)
+
+    console.log("simulating SRTF ----")
+    let {SRTF_schedule, SRTF_avg_waiting_time} = SRTF_scheduling(process_list)
+    write_output("SRTF.txt", SRTF_schedule, SRTF_avg_waiting_time)
+
+    console.log("simulating SJF ----")
+    let alpha = 0.5
+    let {SJF_schedule, SJF_avg_waiting_time} = SJF_scheduling(process_list, alpha)
+    write_output("SJF.txt", SJF_schedule, SJF_avg_waiting_time)
 }
 
 main()

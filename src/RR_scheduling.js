@@ -1,3 +1,5 @@
+import {getAverageWaitingTime} from './util'
+
 export function initProcessTasksMap(process_list) {
     return process_list.reduce((memo, process) => {
         if(!memo[process.id])
@@ -5,14 +7,6 @@ export function initProcessTasksMap(process_list) {
         return memo
     },{})
 }
-
-export function getAverageWaitingTime(processedList) {
-    let total = processedList.reduce((memo, task) => {
-        return memo + task.completion_time - task.arrive_time - task.burst_time
-    }, 0)
-    return (total / processedList.length).toFixed(2)
-}
-
 
 export function RR_scheduling(process_list, time_quantum) {
     let schedule = []
@@ -68,7 +62,7 @@ export function RR_scheduling(process_list, time_quantum) {
             }
         }
     }
-    console.log(processedList)
+    // console.log(processedList)
 
     return {RR_schedule: schedule, RR_avg_waiting_time: getAverageWaitingTime(processedList)}
 }
