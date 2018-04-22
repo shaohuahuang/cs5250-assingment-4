@@ -163,10 +163,86 @@ function SRTF_scheduling(process_list){
     return {SRTF_schedule: schedule, SRTF_avg_waiting_time: getAverageWaitingTime(processedList)}
 }
 
-//--------------------------------SJF
+//--------------------------------SJF_scheduling--------------------------------------
 function SJF_scheduling(process_list, alpha) {
+    let schedule = []
+    let current_time = 0
+    let process_list_copy = process_list.map(process => Object.assign({}, process))
+    let processedList = []
+    let processMeta = {
+        0: {
+            tau: 5,
+            queue: []
+        },
+        1: {
+            tau: 5,
+            queue: []
+        },
+        2: {
+            tau: 5,
+            queue: []
+        },
+        3: {
+            tau: 5,
+            queue: []
+        }
+    }
 
+    let prevTurn = -1
+    let turn = -1
+    while (turn !== -1 || process_list_copy.length !== 0){
+        if(getTurn(processMeta) === -1) {
+            if(process_list_copy.length){
+                if( current_time < process_list_copy[0].arrive_time)
+                    current_time = process_list_copy[0].arrive_time
+            }
+            else
+                break
+        }
+
+        while (process_list_copy.length > 0){
+            //push all tasks into the ready queue if their arrive_time is smaller than current_time
+            if(process_list_copy[0].arrive_time <= current_time){
+                let task = process_list_copy.shift()
+                processMeta[task.id].queue.push(task)
+            }else
+                break
+        }
+
+        turn = getTurn(processMeta)
+        if(turn !== prevTurn){
+            prevTurn = turn
+            schedule.push([current_time, turn])
+        }
+
+        let meta = processMeta[turn]
+        let task = meta.queue.shift()
+        current_time += task.burst_time
+        task.completion_time = current_time
+        meta.tau = alpha * meta.tau + (1 - alpha) * task.burst_time
+        processedList.push(task)
+    }
+
+    // console.log(processedList)
+    return {SJF_schedule: schedule, SJF_avg_waiting_time: getAverageWaitingTime(processedList)}
 }
+
+function getTurn(processMeta) {
+    let turn = -1
+    let tau = Number.MAX_SAFE_INTEGER
+    Object.keys(processMeta).forEach(key => {
+        let meta = processMeta[key]
+        if(meta.queue.length !== 0){
+            if(meta.tau < tau){
+                turn = key
+                tau = meta.tau
+            }
+        }
+    })
+    return turn
+}
+
+//---------------------------------------------------------------------------------
 
 function read_input() {
     let lines = fs.readFileSync("input.txt").toString().split("\n")
