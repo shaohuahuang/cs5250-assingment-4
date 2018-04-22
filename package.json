@@ -4,7 +4,8 @@
   "description": "",
   "main": "simulator.js",
   "scripts": {
-    "test": "mocha 'tests/**/*.js' --compilers js:babel-core/register --require babel-polyfill"
+    "test": "mocha 'tests/**/*.js' --compilers js:babel-core/register --require babel-polyfill",
+    "start": "babel-node simulator.js"
   },
   "devDependencies": {
     "babel-cli": "^6.24.0",
