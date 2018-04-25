@@ -39,7 +39,8 @@ function RR_scheduling(process_list, time_quantum) {
         if(readyQueue.length === 0){
             // if no process in the readyQueue, advance current_time to the arrive time to the first remaining task
             let firstTask = process_list_copy[0]
-            current_time = firstTask.arrive_time
+            if(current_time < firstTask.arrive_time)
+                current_time = firstTask.arrive_time
         }
         // if the tasks arrive_time smaller than current_time, put them in the task list of a process
         while (process_list_copy.length){
