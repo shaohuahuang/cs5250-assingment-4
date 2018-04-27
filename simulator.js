@@ -118,7 +118,9 @@ function SRTF_scheduling(process_list){
     while (heap.size() > 0 || process_list_copy.length > 0){
         if(heap.size() === 0){
             //advance the time to the arrive_time of the first task if heap is empty
-            current_time += process_list_copy[0].arrive_time
+            let firstTask = process_list_copy[0]
+            if(current_time < firstTask.arrive_time)
+                current_time = firstTask.arrive_time
         }
 
         while (process_list_copy.length > 0){
